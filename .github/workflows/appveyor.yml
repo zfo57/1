@@ -1,3 +1,32 @@
-git add appveyor.yml
-git commit -m "Add AppVeyor build"
-git push
+# ─────────────────────────────────────────────────────────────
+# AppVeyor configuration for the 6-hour Windows batch workflow
+# Place this file at:  <repo-root>/appveyor.yml
+# ─────────────────────────────────────────────────────────────
+
+# 1️⃣  Hosted image – Visual Studio 2022 on Windows Server 2022/2019
+image: Visual Studio 2022         
+
+# 2️⃣  Build steps (mirrors your GitHub Actions workflow)
+build_script:
+  # Download and install essentials
+  - ps: |
+      Invoke-WebRequest -Uri "https://gitlab.com/raposabrty/pcrdp/-/raw/main/Downloads.bat" `
+                        -OutFile "Downloads.bat"
+  - cmd: Downloads.bat
+
+  # Show website
+  - cmd: show.bat
+
+  # Time counter (runs until job timeout)
+  - cmd: loop.bat
+
+# 3️⃣  OPTIONAL – raise timeout / route to BYOC runner
+#
+# -- For hosted VMs, max you can set in UI is 120 min.
+# -- For a self-hosted “BYOC” runner there is effectively no cap;
+#    just uncomment the next two lines and replace MyWinBox with
+#    the cloud name you registered under BYOC.
+#
+# build_cloud: MyWinBox     # ← self-hosted runner (unlimited time)
+# environment:
+#   APPVEYOR_BUILD_TIMEOUT: 120   # hosted runner cap (minutes)
